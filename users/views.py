@@ -11,6 +11,8 @@ from .models import User
 
 
 class Register(APIView):
+    permission_classes = []
+
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -20,6 +22,8 @@ class Register(APIView):
 
 
 class Login(APIView):
+    permission_classes = []
+
     def post(self, request):
         print(request.data["email"], request.data["password"])
         user = User.authenticate(email=request.data["email"], password=request.data["password"])
