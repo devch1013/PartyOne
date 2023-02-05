@@ -15,12 +15,18 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
+    GENDER_CHOICES = (
+        ("MALE", "남성"),
+        ("FEMALE", "여성"),
+    )
     email = models.EmailField(max_length=50, unique=True, null=True)
     thumbnail = models.BooleanField(default=False)
     username = models.CharField(max_length=20, unique=True)
     profile_text = models.TextField(max_length=500, blank=True)
     uuid = models.UUIDField(unique=True, null=True)
     notice = models.BooleanField(default=True)
+    birth_day = models.DateField(null=True)
+    gender = models.CharField(max_length=10, null=True, choices=GENDER_CHOICES)
 
     class Meta:
         db_table = "user"
@@ -30,7 +36,10 @@ class User(AbstractBaseUser):
 
     @staticmethod
     def authenticate(email, password):
-        user = User.objects.get(email=email)
-        if user.check_password(password):
-            return user
-        return None
+        try:
+            user = User.objects.get(email=email)
+            if user.check_password(password):
+                return user
+            return False
+        except:
+            return None

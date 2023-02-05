@@ -3,9 +3,13 @@ from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserSerializer
+from rest_framework.exceptions import AuthenticationFailed
+from .serializers import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+from main.open_api.responses import SuccessResponse, SuccessDataResponse
 
 # Create your views here.
 
@@ -13,6 +17,13 @@ from .models import User
 class Register(APIView):
     permission_classes = []
 
+    @extend_schema(
+        request=UserSerializer,
+        responses={200: SuccessResponse},
+        tags=["User"],
+        summary="Register",
+        description="",
+    )
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -24,23 +35,25 @@ class Register(APIView):
 class Login(APIView):
     permission_classes = []
 
+    @extend_schema(
+        request=UserSerializer,
+        responses={200: SuccessResponse},
+        tags=["User"],
+        summary="Register",
+        description="",
+    )
     def post(self, request):
-        print(request.data["email"], request.data["password"])
+        # print(request.data["email"], request.data["password"])
         user = User.authenticate(email=request.data["email"], password=request.data["password"])
-        if user is not None:
+        if user is not None and user is not False:
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
-            res = Response(
+            return Response(
                 {
-                    "message": "login success",
-                    "token": {
-                        "access": access_token,
-                        "refresh": refresh_token,
-                    },
-                },
-                status=status.HTTP_200_OK,
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                }
             )
-            return res
-        print(user)
-        return Response("asdasd")
+        else:
+            raise AuthenticationFailed("Invalid credentials")

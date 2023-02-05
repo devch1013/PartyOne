@@ -52,7 +52,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": ("main.authenticate.SafeJWTAuthentication",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_RENDERER_CLASSES": ["main.response_renderer.CustomRenderer"],
+    "DEFAULT_RENDERER_CLASSES": ["main.open_api.response_renderer.CustomRenderer"],
 }
 
 MIDDLEWARE = [
@@ -173,4 +173,7 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
+    "PREPROCESSING_HOOKS": [
+        "main.open_api.preprocessing_hook.custom_preprocessing_hook",
+    ],
 }

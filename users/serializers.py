@@ -1,9 +1,9 @@
-from rest_framework.serializers import ModelSerializer, Serializer
+from rest_framework import serializers
 from .models import User
 import uuid
 
 
-class UserSerializer(ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("username", "email", "password")
@@ -16,3 +16,8 @@ class UserSerializer(ModelSerializer):
             validated_data["password"],
         )
         return user
+
+
+class UserTokenResponseSerializer(serializers.Serializer):
+    access_token = serializers.CharField()
+    refresh_token = serializers.CharField()

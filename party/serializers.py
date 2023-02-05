@@ -1,5 +1,7 @@
 from rest_framework.serializers import ModelSerializer, Serializer, ReadOnlyField
 from .models import Party
+import random
+import string
 
 
 class PartyCreateSerializer(ModelSerializer):
@@ -16,6 +18,7 @@ class PartyCreateSerializer(ModelSerializer):
     def create(self, validated_data):
         party = Party.objects.create(
             name=validated_data["name"],
+            col=generate_col(10),
             description=validated_data["description"],
             location=validated_data["location"],
             date=validated_data["date"],
@@ -31,7 +34,7 @@ class PartyListSerializer(ModelSerializer):
     class Meta:
         model = Party
         fields = (
-            "id",
+            "col",
             "name",
             "date",
             "location",
@@ -46,3 +49,11 @@ class ResponseSerializer(Serializer):
 
     class Meta:
         fields = ("message", "status", "data")
+
+
+def generate_col(n: int):
+    rand_str = ""
+    for _ in range(n):
+        rand_str += str(random.choice(string.ascii_letters + string.digits))
+
+    return rand_str
