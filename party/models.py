@@ -9,8 +9,9 @@ class Party(models.Model):
     id = models.AutoField(primary_key=True)
     col = models.CharField(max_length=10, unique=True, null=True)
     name = models.CharField(max_length=100)
-    description = models.TextField()
-    date = models.DateTimeField()
+    description = models.TextField(null=True)
+    start_date = models.DateTimeField(null=True)
+    end_date = models.DateTimeField(null=True)
     location = models.CharField(max_length=100)
     uuid = models.UUIDField(default=uuid.uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,6 +19,8 @@ class Party(models.Model):
     done = models.BooleanField(default=False)
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="host", default=None)
     max_attendees = models.IntegerField(default=4)
+    longitude = models.CharField(max_length=10, null=True)
+    latitude = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return self.name

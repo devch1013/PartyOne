@@ -6,10 +6,11 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from .serializers import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken, Token
 from .models import User
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
-from main.open_api.responses import SuccessResponse, SuccessDataResponse
+from main.open_api.responses import *
 
 # Create your views here.
 
@@ -19,7 +20,7 @@ class Register(APIView):
 
     @extend_schema(
         request=UserSerializer,
-        responses={200: SuccessResponse},
+        responses={200: SuccessSimpleResponse},
         tags=["User"],
         summary="Register",
         description="",
@@ -37,7 +38,7 @@ class Login(APIView):
 
     @extend_schema(
         request=UserSerializer,
-        responses={200: SuccessResponse},
+        responses={200: SuccessSingleDataResponse(data=UserTokenResponseSerializer())},
         tags=["User"],
         summary="Register",
         description="",
@@ -57,3 +58,29 @@ class Login(APIView):
             )
         else:
             raise AuthenticationFailed("Invalid credentials")
+
+
+class Refresh(APIView):
+    permission_classes = []
+
+    @extend_schema(
+        request=UserSerializer,
+        responses={200: SuccessSingleDataResponse(data=UserTokenResponseSerializer())},
+        tags=["User"],
+        summary="Register",
+        description="",
+    )
+    def post(self, request):
+        refresh_token = request.data["refresh_token"]
+
+        refresh = RefreshToken(refresh_token)
+        refresh.verify()
+
+        print(refresh.payload.get("user_id"))
+        print(refresh.access_token)
+
+        return Response(
+            {
+                "access_token": str(refresh.access_token),
+            }
+        )

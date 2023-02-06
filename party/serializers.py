@@ -2,29 +2,31 @@ from rest_framework.serializers import ModelSerializer, Serializer, ReadOnlyFiel
 from .models import Party
 import random
 import string
+from drf_spectacular.utils import extend_schema_serializer
+from rest_framework import serializers
+from main.open_api.responses import *
 
 
 class PartyCreateSerializer(ModelSerializer):
+    thumbnail = serializers.ImageField(required=False)
+
     class Meta:
         model = Party
         fields = (
             "name",
             "description",
             "location",
-            "date",
+            "start_date",
+            "end_date",
             "max_attendees",
+            "thumbnail",
+            "latitude",
+            "longitude",
         )
 
     def create(self, validated_data):
-        party = Party.objects.create(
-            name=validated_data["name"],
-            col=generate_col(10),
-            description=validated_data["description"],
-            location=validated_data["location"],
-            date=validated_data["date"],
-            max_attendees=validated_data["max_attendees"],
-            host=validated_data["host"],
-        )
+        del validated_data["thumbnail"]
+        party = Party.objects.create(col=generate_col(10), **validated_data)
         return party
 
 
@@ -36,9 +38,21 @@ class PartyListSerializer(ModelSerializer):
         fields = (
             "col",
             "name",
-            "date",
+            "start_date",
             "location",
             "host_name",
+        )
+
+
+class PartyObjectSerializer(ModelSerializer):
+    class Meta:
+        model = Party
+        fields = (
+            "col",
+            "name",
+            "description",
+            "start_date",
+            "uuid",
         )
 
 

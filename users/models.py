@@ -21,6 +21,7 @@ class User(AbstractBaseUser):
     )
     email = models.EmailField(max_length=50, unique=True, null=True)
     thumbnail = models.BooleanField(default=False)
+    # background image
     username = models.CharField(max_length=20, unique=True)
     profile_text = models.TextField(max_length=500, blank=True)
     uuid = models.UUIDField(unique=True, null=True)
@@ -43,3 +44,6 @@ class User(AbstractBaseUser):
             return False
         except:
             return None
+
+
+# 카테고리
